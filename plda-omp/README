@@ -5,7 +5,7 @@ make omp_lda
                --vocab_file url.dat.plda_vocab \
                --threshold 10
 
-(2) mpiexec -n 4 ./mpi_lda --num_topics 300                        \
+(2) mpiexec -n 4 ./omp_lda --num_topics 300                        \
                            --alpha 0.1                             \
                            --beta 0.01                             \
                            --training_data_file url.dat.plda_index \
@@ -15,4 +15,13 @@ make omp_lda
 (3) postpreprocess --vocab_file url.dat.plda_vocab   \
                    --input_model lda_model_index.txt \
                    --output_model lda_model.txt
+
+(4) infer --alpha 0.1                                  \
+          --beta 0.01                                  \
+          --inference_data_file test_data.txt          \
+          --inference_result_file inference_result.txt \
+          --model_file lda_model.txt                   \
+          --total_iterations 15                        \
+          --burn_in_iterations 10
+                   
 
