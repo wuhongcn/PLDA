@@ -146,7 +146,6 @@ class TopicCountDistribution {
   int size() const { return size_; }
   inline int64& operator[](int index) const { return distribution_[index]; }
   void clear() { memset(distribution_, 0, sizeof(*distribution_) * size_); }
-  void replicate(int64* buf) const { memcpy(buf, distribution_, sizeof(*distribution_) * size_); }
  private:
   int64* distribution_;
   int size_;
@@ -193,7 +192,7 @@ struct DocumentWordTopicsPB {
 
   void add_wordtopics(const string& word_s,
                       int word, const vector<int32>& topics) {
-    words_s_.push_back(word_s);
+  //  words_s_.push_back(word_s);
     words_.push_back(word);
     wordtopics_start_index_.pop_back();
     wordtopics_start_index_.push_back(wordtopics_.size());
@@ -206,10 +205,11 @@ struct DocumentWordTopicsPB {
 };
 
 // Generate a random float value in the range of [0,1) from the
-// uniform distribution.
 inline double RandDouble() {
-  return rand() / static_cast<double>(RAND_MAX);
-//  return 0.123456789;
+  double tmp = rand() / static_cast<double>(RAND_MAX);
+  while(tmp >= 0.999999 )
+     tmp = (double) rand() / static_cast<double>(RAND_MAX);
+  return tmp;
 }
 
 // Generate a random integer value in the range of [0,bound) from the
@@ -218,6 +218,29 @@ inline int RandInt(int bound) {
   // NOTE: Do NOT use rand() % bound, which does not approximate a
   // discrete uniform distribution will.
   return static_cast<int>(RandDouble() * bound);
+}
+
+inline void loop_static(int seq, int tnum, int from, int to, int& lb, int& ub){
+  int chunk_size;
+  int num_iters   = to - from;   // assume bump is normalized
+  int leftover_iters = 0;
+  int num_schedule_thds = tnum;
+  if ((num_iters!=0) && (num_iters<num_schedule_thds)) {
+    chunk_size = 1;
+  } else {
+    chunk_size = num_iters / num_schedule_thds;
+    leftover_iters = num_iters % num_schedule_thds;
+  }
+  if (seq < leftover_iters) {
+    lb = from + (chunk_size+1) *seq;
+    ub = lb + (chunk_size+1);
+  } else {
+    lb = from + chunk_size * seq + leftover_iters;
+    ub = lb + chunk_size ;
+  }
+  if (ub > to)
+    ub = to;
+  return ;
 }
 
 // Returns a sample selected from a non-normalized probability distribution.

@@ -81,11 +81,6 @@ void LDADocument::WordOccurrenceIterator::SkipWordsWithoutOccurrences() {
   }
 }
 
-void LDADocument::WordOccurrenceIterator::GotoWord(int new_word_index) {
-    word_index_ = new_word_index;
-    word_topic_index_ = parent_->topic_assignments_->wordtopics_start_index_[word_index_];
-}
-
 void LDADocument::CountTopicDistribution() {
   for (int i = 0; i < topic_distribution_.size(); ++i) {
     topic_distribution_[i] = 0;
@@ -118,8 +113,8 @@ LDADocument::LDADocument(const DocumentWordTopicsPB& topics,
   topic_assignments_ = new DocumentWordTopicsPB;
   topic_assignments_->CopyFrom(topics);
 
-  topic_distribution_.resize(num_topics);
-  CountTopicDistribution();
+  //topic_distribution_.resize(num_topics);
+  //CountTopicDistribution();
 }
 
 LDADocument::~LDADocument() {

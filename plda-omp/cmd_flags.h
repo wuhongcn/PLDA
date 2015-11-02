@@ -31,6 +31,7 @@ class LDACmdLineFlags {
   int         num_topics_;
   double      alpha_;
   double      beta_;
+  long        unique_word_size_;
   std::string training_data_file_;
   std::string model_file_;
   std::string inference_data_file_;
@@ -38,7 +39,6 @@ class LDACmdLineFlags {
   int         burn_in_iterations_;
   int         total_iterations_;
   std::string compute_likelihood_;
-  int         num_pw_;
 };
 
 }  // namespace learning_lda

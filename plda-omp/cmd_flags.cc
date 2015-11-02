@@ -25,14 +25,13 @@ LDACmdLineFlags::LDACmdLineFlags() {
   num_topics_ = 0;
   alpha_ = -1;
   beta_ = -1;
-  training_data_file_ = "";
+  unique_word_size_ = -1;
   inference_data_file_ = "";
   inference_result_file_ = "";
   model_file_ = "";
   burn_in_iterations_ = -1;
   total_iterations_ = -1;
   compute_likelihood_ = "false";
-  num_pw_ = 1;
 }
 
 void LDACmdLineFlags::ParseCmdFlags(int argc, char** argv) {
@@ -45,6 +44,9 @@ void LDACmdLineFlags::ParseCmdFlags(int argc, char** argv) {
       ++i;
     } else if (0 == strcmp(argv[i], "--beta")) {
       std::istringstream(argv[i+1]) >> beta_;
+      ++i;
+    } else if (0 == strcmp(argv[i], "--unique_word_size")) {
+      std::istringstream(argv[i+1]) >> unique_word_size_;
       ++i;
     } else if (0 == strcmp(argv[i], "--training_data_file")) {
       training_data_file_ = argv[i+1];
@@ -67,9 +69,6 @@ void LDACmdLineFlags::ParseCmdFlags(int argc, char** argv) {
     } else if (0 == strcmp(argv[i], "--compute_likelihood")) {
       compute_likelihood_ = argv[i+1];
       ++i;
-    } else if(0 == strcmp(argv[i], "--num_pw")) {
-        std::istringstream(argv[i+1]) >> num_pw_;
-        ++i;
     }
 
   }
@@ -89,6 +88,10 @@ bool LDACmdLineFlags::CheckTrainingValidity() {
     std::cerr << "beta must > 0.\n";
     ret = false;
   }
+/*  if (unique_word_size_ <= 0) {
+    std::cerr << "words size must > 0.\n";
+    ret = false;
+  }*/
   if (training_data_file_.empty()) {
     std::cerr << "Invalid training_data_file.\n";
     ret = false;
@@ -122,6 +125,10 @@ bool LDACmdLineFlags::CheckParallelTrainingValidity() {
     std::cerr << "beta must > 0.\n";
     ret = false;
   }
+/*  if (unique_word_size_ <= 0) {
+    std::cerr << "words size must > 0.\n";
+    ret = false;
+  }*/
   if (training_data_file_.empty()) {
     std::cerr << "Invalid training_data_file.\n";
     ret = false;

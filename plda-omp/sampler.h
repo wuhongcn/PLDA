@@ -49,7 +49,7 @@ class LDASampler {
   // to accum_model_.  For the first certain number of iterations,
   // where the algorithm has not converged yet, you should set burn_in
   // to false.  After that, we should set burn_in to true.
-  void DoIteration(LDACorpus* corpus, bool train_model, bool burn_in);
+  void DoIteration(int myid, int pnum, int tid, int tnum, LDACorpus* corpus, bool train_model, bool burn_in);
 
   // Performs one round of Gibbs sampling on a document.  Updates
   // document's topic assignments.  For learning, update_model_=true,
@@ -70,7 +70,7 @@ class LDASampler {
   // Computes the log likelihood of a document.
   double LogLikelihood(LDADocument* document) const;
 
- protected:
+ private:
   const double alpha_;
   const double beta_;
   LDAModel* model_;

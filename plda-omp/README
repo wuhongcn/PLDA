@@ -1,0 +1,18 @@
+make omp_lda
+
+(1) preprocess --input url.dat.plda            \
+               --output url.dat.plda_index     \
+               --vocab_file url.dat.plda_vocab \
+               --threshold 10
+
+(2) mpiexec -n 4 ./mpi_lda --num_topics 300                        \
+                           --alpha 0.1                             \
+                           --beta 0.01                             \
+                           --training_data_file url.dat.plda_index \
+                           --model_file lda_model_index.txt        \
+                           --total_iterations 1200
+
+(3) postpreprocess --vocab_file url.dat.plda_vocab   \
+                   --input_model lda_model_index.txt \
+                   --output_model lda_model.txt
+

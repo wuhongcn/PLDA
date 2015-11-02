@@ -51,9 +51,6 @@ class LDADocument {
     // Returns the word of the current occurrence.
     int Word();
 
-    // Reset word_index_
-    void GotoWord(int new_word_index);
-
    private:
     // If the current word has no occurrences, advance until reaching a word
     // that does have occurrences or the end of the document.
@@ -86,9 +83,12 @@ class LDADocument {
   void ResetWordIndex(const map<string, int>& word_index_map);
 
   string DebugString();
+
+  vector<int64> topic_distribution_;
+
  protected:
   DocumentWordTopicsPB*  topic_assignments_;
-  vector<int64> topic_distribution_;
+//  vector<int64> topic_distribution_;
 
   // Count topic occurrences in topic_assignments_ and stores the
   // result in topic_distribution_.
@@ -96,22 +96,6 @@ class LDADocument {
 };
 
 typedef list<LDADocument*> LDACorpus;
-
-struct InvertedIndex {
-    LDADocument*    document_ptr;
-    int word_index_in_document;
-
-    InvertedIndex(LDADocument* doc_p, int word_index) {
-        document_ptr = doc_p;
-        word_index_in_document = word_index;
-    }
-};
-
-struct PLDAPLUSCorpus {
-    int num_words;
-    LDACorpus* corpus;
-    list<InvertedIndex*>*   word_inverted_index;
-};
 
 }  // namespace learning_lda
 

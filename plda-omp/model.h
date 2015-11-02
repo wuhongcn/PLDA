@@ -66,7 +66,8 @@ class LDAModel {
   };
   friend class Iterator;
 
-  LDAModel(int num_topic, const map<string, int>& word_index_map);
+  //LDAModel(int num_topic, const map<string, int>& word_index_map);
+  LDAModel(int num_topic, int unique_word_size);
 
   // Read word topic distribution and global distribution from iframe.
   // Return a map from word string to index. Intenally we use int to represent
@@ -105,9 +106,10 @@ class LDAModel {
   void AppendAsString(std::ostream& out) const;
 
 
+  vector<int64> memory_alloc_;
  protected:
   // The dataset which keep all the model memory.
-  vector<int64> memory_alloc_;
+ // vector<int64> memory_alloc_;
  private:
   // If users query a word for its topic distribution via
   // GetWordTopicDistribution, but this word does not appear in the

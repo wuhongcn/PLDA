@@ -49,8 +49,9 @@ const TopicCountDistribution& LDAModel::Iterator::Distribution() const {
 }
 
 LDAModel::LDAModel(
-    int num_topics, const map<string, int>& word_index_map) {
-  int vocab_size = word_index_map.size();
+    int num_topics, int unique_word_size) {
+    //int num_topics, const map<string, int>& word_index_map) {
+  int vocab_size = unique_word_size;
   memory_alloc_.resize(((int64)(num_topics)) * ((int64) vocab_size + 1), 0);
   // topic_distribution and global_distribution are just accessor pointers
   // and are not responsible for allocating/deleting memory.
@@ -63,7 +64,6 @@ LDAModel::LDAModel(
         TopicCountDistribution(&memory_alloc_[0] + num_topics * i,
                                num_topics);
   }
-  word_index_map_ = word_index_map;
 }
 
 const TopicCountDistribution& LDAModel::GetWordTopicDistribution(
@@ -81,7 +81,6 @@ void LDAModel::IncrementTopic(int word,
                               int64 count) {
   CHECK_GT(num_topics(), topic);
   CHECK_GT(num_words(), word);
-
   topic_distributions_[word][topic] += count;
   global_distribution_[topic] += count;
   CHECK_LE(0, topic_distributions_[word][topic]);
@@ -91,20 +90,18 @@ void LDAModel::ReassignTopic(int word,
                              int old_topic,
                              int new_topic,
                              int64 count) {
+#pragma omp critical
+{
   IncrementTopic(word, old_topic, -count);
   IncrementTopic(word, new_topic, count);
 }
+}
 
 void LDAModel::AppendAsString(std::ostream& out) const {
-  vector<string> index_word_map(word_index_map_.size());
-  for (map<string, int>::const_iterator iter = word_index_map_.begin();
-       iter != word_index_map_.end(); ++iter) {
-    index_word_map[iter->second] = iter->first;
-  }
-  for (LDAModel::Iterator iter(this); !iter.Done(); iter.Next()) {
-    out << index_word_map[iter.Word()] << "\t";
+  for (int i = 0; i < topic_distributions_.size(); ++i) {
+    out << i << "\t" ;
     for (int topic = 0; topic < num_topics(); ++topic) {
-      out << iter.Distribution()[topic]
+      out << topic_distributions_[i][topic]
           << ((topic < num_topics() - 1) ? " " : "\n");
     }
   }
