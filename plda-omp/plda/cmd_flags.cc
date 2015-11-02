@@ -25,7 +25,7 @@ LDACmdLineFlags::LDACmdLineFlags() {
   num_topics_ = 0;
   alpha_ = -1;
   beta_ = -1;
-  unique_word_size_ = -1;
+  training_data_file_ = "";
   inference_data_file_ = "";
   inference_result_file_ = "";
   model_file_ = "";
